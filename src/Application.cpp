@@ -123,6 +123,8 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    glfwSwapInterval(1);
+
     if (glewInit() != GLEW_OK) {
         std::cout << "error! \n";
         return -1;
@@ -159,23 +161,34 @@ int main(void)
 
 
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+    const unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
     glUseProgram(shader);
+
+    const int location = glGetUniformLocation(shader, "u_Color");
+    ASSERT(location != -1);
+    glUniform4f(location, 0.8f, 0.3f, 0.8f, 1.0f);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
 
-
-
-
+    float r = 0.8f;
+    float increment = 0.05f;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
         
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
+        glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+
+        if (r > 1.0f || r < -1.0f) {
+            increment *= -1;
+        }
+
+        r += increment;
        
        /* glColor3f(1, 0, 0);
         GLUquadric* quad;
